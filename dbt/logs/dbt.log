@@ -1,0 +1,75 @@
+[0m11:39:03.776116 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000202CF4E1A10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000202D0552550>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000202D0553250>]}
+
+
+============================== 11:39:03.780120 | 9f044921-e66f-4385-891a-e3589ad0751c ==============================
+[0m11:39:03.780120 [info ] [MainThread]: Running with dbt=1.11.8
+[0m11:39:03.781120 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': '.', 'debug': 'False', 'fail_fast': 'False', 'log_path': 'C:\\Projects\\Product Cross-Sell Propensity Pipeline\\dbt\\logs', 'warn_error': 'None', 'version_check': 'True', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'introspect': 'True', 'invocation_command': 'dbt run --profiles-dir .', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m11:39:03.784664 [info ] [MainThread]: Error importing adapter: No module named 'dbt.adapters.postgres'
+[0m11:39:03.785701 [error] [MainThread]: Encountered an error:
+Runtime Error
+  Credentials in profile "default", target "dev" invalid: Runtime Error
+    Could not find adapter type postgres!
+[0m11:39:03.786703 [debug] [MainThread]: Command `dbt run` failed at 11:39:03.786703 after 0.10 seconds
+[0m11:39:03.787702 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000202CF4EE510>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000202D0583FD0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000202CF26A790>]}
+[0m11:39:03.787702 [debug] [MainThread]: Flushing usage events
+[0m11:39:04.002632 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m11:44:19.901821 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000019182F1E7D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000019182F1E190>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000019182F1EA50>]}
+
+
+============================== 11:44:19.906931 | 50c17931-2ef6-47e7-96af-68846ddf4823 ==============================
+[0m11:44:19.906931 [info ] [MainThread]: Running with dbt=1.11.8
+[0m11:44:19.907942 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'printer_width': '80', 'write_json': 'True', 'empty': 'False', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'fail_fast': 'False', 'debug': 'False', 'log_format': 'default', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': '.', 'use_colors': 'True', 'indirect_selection': 'eager', 'invocation_command': 'dbt run --profiles-dir .', 'use_experimental_parser': 'False', 'log_path': 'C:\\Projects\\Product Cross-Sell Propensity Pipeline\\dbt\\logs'}
+[0m11:44:20.160121 [warn ] [MainThread]: [[33mWARNING[0m]: Deprecated functionality
+The `source-paths` config has been renamed to `model-paths`. Please update your
+`dbt_project.yml` configuration to reflect this change.
+[0m11:44:20.162172 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': '50c17931-2ef6-47e7-96af-68846ddf4823', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000191842052D0>]}
+[0m11:44:20.383481 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '50c17931-2ef6-47e7-96af-68846ddf4823', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000191843E2490>]}
+[0m11:44:20.454028 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '50c17931-2ef6-47e7-96af-68846ddf4823', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000191FF878D90>]}
+[0m11:44:20.456037 [info ] [MainThread]: Registered adapter: postgres=1.10.0
+[0m11:44:21.037365 [debug] [MainThread]: checksum: 7d524ac048c2100769df89d592e662e060a73ca564e31bd9c2a37efdfe8d8ab6, vars: {}, profile: , target: , version: 1.11.8
+[0m11:44:21.039284 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m11:44:21.040303 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': '50c17931-2ef6-47e7-96af-68846ddf4823', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000191844FD610>]}
+[0m11:44:23.714329 [error] [MainThread]: Encountered an error:
+Compilation Error
+  Model 'model.product_cross_sell.propensity_inputs' (models\propensity_inputs.sql) depends on a source named 'raw.propensity_inputs' which was not found
+[0m11:44:23.716032 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- ConfigSourcePathDeprecation: 1 occurrence
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m11:44:23.717154 [debug] [MainThread]: Command `dbt run` failed at 11:44:23.717154 after 3.90 seconds
+[0m11:44:23.717937 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001918424F010>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001918424CD90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000019184B1B6D0>]}
+[0m11:44:23.718480 [debug] [MainThread]: Flushing usage events
+[0m11:44:23.945295 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m12:03:31.070965 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001B9AA656B10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001B9AA65CE90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001B9AA656A50>]}
+
+
+============================== 12:03:31.076496 | b23aa9de-d003-478d-9f87-5d25640350e9 ==============================
+[0m12:03:31.076496 [info ] [MainThread]: Running with dbt=1.11.8
+[0m12:03:31.077502 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'empty': 'False', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': '.', 'indirect_selection': 'eager', 'use_colors': 'True', 'invocation_command': 'dbt run --profiles-dir .', 'use_experimental_parser': 'False', 'log_path': 'C:\\Projects\\Product Cross-Sell Propensity Pipeline\\dbt\\logs'}
+[0m12:03:31.168833 [warn ] [MainThread]: [[33mWARNING[0m]: Deprecated functionality
+The `source-paths` config has been renamed to `model-paths`. Please update your
+`dbt_project.yml` configuration to reflect this change.
+[0m12:03:31.170364 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': 'b23aa9de-d003-478d-9f87-5d25640350e9', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001B9AB87FD50>]}
+[0m12:03:31.424597 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'b23aa9de-d003-478d-9f87-5d25640350e9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001B9AA035B50>]}
+[0m12:03:31.519896 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'b23aa9de-d003-478d-9f87-5d25640350e9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001B9A6DB87D0>]}
+[0m12:03:31.522920 [info ] [MainThread]: Registered adapter: postgres=1.10.0
+[0m12:03:31.869174 [debug] [MainThread]: checksum: 7d524ac048c2100769df89d592e662e060a73ca564e31bd9c2a37efdfe8d8ab6, vars: {}, profile: , target: , version: 1.11.8
+[0m12:03:31.870660 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m12:03:31.871666 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': 'b23aa9de-d003-478d-9f87-5d25640350e9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001B9AB87E9D0>]}
+[0m12:03:33.295332 [error] [MainThread]: Encountered an error:
+Compilation Error
+  Model 'model.product_cross_sell.propensity_inputs' (models\propensity_inputs.sql) depends on a source named 'raw.propensity_inputs' which was not found
+[0m12:03:33.296840 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- ConfigSourcePathDeprecation: 1 occurrence
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m12:03:33.298503 [debug] [MainThread]: Command `dbt run` failed at 12:03:33.298503 after 2.35 seconds
+[0m12:03:33.298503 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001B9AB7057D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001B9AB7054D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001B9ABE50CD0>]}
+[0m12:03:33.300010 [debug] [MainThread]: Flushing usage events
+[0m12:03:33.536053 [debug] [MainThread]: An error was encountered while trying to flush usage events

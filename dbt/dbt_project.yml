@@ -1,0 +1,12 @@
+name: product_cross_sell
+version: '1.0'
+config-version: 2
+profile: default
+
+source-paths: ["models"]
+analysis-paths: ["analysis"]
+test-paths: ["tests"]
+
+models:
+  product_cross_sell:
+    +materialized: table

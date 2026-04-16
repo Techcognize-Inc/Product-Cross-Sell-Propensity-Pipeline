@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: mart_propensity_scores
+    description: "Customer-product propensity scores computed from weekly batch inputs."
+    columns:
+      - name: customer_id
+        description: "Customer identifier"
+      - name: product_family
+        description: "Product category for propensity scoring"
+      - name: propensity_score
+        description: "Normalized score from 0 to 100"
+
+  - name: mart_campaign_lists
+    description: "Campaign lists for high-propensity customers filtered from propensity scores."
+    columns:
+      - name: customer_id
+        description: "Customer identifier"
+      - name: product_family
+        description: "Product category for propensity scoring"
+      - name: propensity_score
+        description: "Normalized score from 0 to 100"
+      - name: score_ts
+        description: "Timestamp when the score was computed"
+      - name: campaign_segment
+        description: "Campaign segment classification (e.g., HOT, WARM, TARGET)"
+      - name: generated_at
+        description: "Timestamp when the campaign list was generated"
+
+seeds:
+  - name: weight_seeds
+    description: "Configurable weights for product propensity score composition"

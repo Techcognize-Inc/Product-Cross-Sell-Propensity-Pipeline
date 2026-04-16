@@ -1,0 +1,30 @@
+[0m11:32:25.038298 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D8F3960B50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D8F3963D10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D8F3962710>]}
+
+
+============================== 11:32:25.044277 | 3116ea88-4bde-49bb-a7c4-4c431bc6bc4d ==============================
+[0m11:32:25.044277 [info ] [MainThread]: Running with dbt=1.11.8
+[0m11:32:25.044277 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'C:\\Projects\\Product Cross-Sell Propensity Pipeline\\dbt', 'fail_fast': 'False', 'warn_error': 'None', 'log_path': 'logs', 'version_check': 'True', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'invocation_command': 'dbt run --profiles-dir C:\\Projects\\Product Cross-Sell Propensity Pipeline\\dbt', 'static_parser': 'True', 'log_format': 'default', 'target_path': 'None', 'introspect': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m11:32:25.045277 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path C:\Projects\Product Cross-Sell Propensity Pipeline\dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m11:32:25.046279 [debug] [MainThread]: Command `dbt run` failed at 11:32:25.046279 after 0.11 seconds
+[0m11:32:25.047279 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D8F396DD90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D8F3963510>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D8F3960210>]}
+[0m11:32:25.047279 [debug] [MainThread]: Flushing usage events
+[0m11:32:25.288238 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m11:37:02.669377 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000012FF2A510D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000012FF2A51290>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000012FF3AC9A10>]}
+
+
+============================== 11:37:02.673106 | 4c9ef2c2-244a-4660-b32a-84a8e5d8a40d ==============================
+[0m11:37:02.673106 [info ] [MainThread]: Running with dbt=1.11.8
+[0m11:37:02.673626 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'C:\\Projects\\Product Cross-Sell Propensity Pipeline\\dbt', 'version_check': 'True', 'warn_error': 'None', 'log_path': 'logs', 'fail_fast': 'False', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'introspect': 'True', 'invocation_command': 'dbt run --profiles-dir C:\\Projects\\Product Cross-Sell Propensity Pipeline\\dbt', 'static_parser': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'send_anonymous_usage_stats': 'True'}
+[0m11:37:02.674140 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path C:\Projects\Product Cross-Sell Propensity Pipeline\dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m11:37:02.675701 [debug] [MainThread]: Command `dbt run` failed at 11:37:02.675701 after 0.10 seconds
+[0m11:37:02.676221 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000012FF2A50190>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000012FF2A53550>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000012FF2A53650>]}
+[0m11:37:02.676767 [debug] [MainThread]: Flushing usage events
+[0m11:37:03.145712 [debug] [MainThread]: An error was encountered while trying to flush usage events

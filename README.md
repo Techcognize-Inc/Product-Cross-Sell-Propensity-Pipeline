@@ -1,0 +1,71 @@
+# Product Cross-Sell Propensity Pipeline
+
+This repository implements a hybrid batch + streaming propensity scoring pipeline for retail banking product cross-sell.
+
+## Architecture
+
+- `Batch/`: PySpark weekly signal engineering job that computes customer-product propensity signals and writes scoring inputs.
+- `dbt/`: Data transformation layer with a `mart_propensity_scores` model and configurable score weights.
+- `Flinkjobs/`: Windows-native Python/Kafka intent detector that consumes transaction events and broadcast propensity scores, then emits CRM offers.
+- `Airflow/`: DAG to orchestrate weekly batch refresh, broadcast score publication, and nightly enrichment updates.
+- `Streaming/`: Kafka producer/consumer helpers for transaction and product event streams.
+- `Streamlit/`: Marketing dashboard for live intent feed, campaign builder, and score overview.
+
+## Docker Compose
+
+This repo includes a root `docker-compose.yml` that starts:
+- Zookeeper
+- Kafka
+- PostgreSQL
+- Airflow webserver
+- Streamlit dashboard
+- Kafka transaction producer
+- Kafka propensity score broadcast publisher
+- CRM Kafka consumer
+- Python/Kafka intent detector service
+
+To start the stack:
+
+```bash
+docker compose up --build
+```
+
+To start only the producer and Streamlit app:
+
+```bash
+docker compose up --build producer streamlit
+```
+
+## Sample data
+
+The repository now includes `data/generate_sample_data.py` to build realistic sample data for batch and streaming layers using the **UCI Bank Marketing Dataset** (archive.ics.uci.edu/ml/datasets/Bank+Marketing), scaled to **500K customers** as per requirements.
+
+- **Demographics**: Age, income band (mocked), region (mocked) from UCI
+- **Product holdings**: Home loan (housing), personal loan (loan) from UCI; credit card, fixed deposit mocked
+- **Campaign history**: Last response, campaign touches from UCI campaign data
+- **Transaction history**: Mocked using Faker, linked to UCI customers
+
+Run it before batch execution:
+
+```bash
+python data/generate_sample_data.py
+```
+
+The PySpark job in `Batch/propensity_signals.py` now reads from `data/*.parquet` and computes the transaction history, demographics, product holdings, and campaign signals required for propensity scoring.
+
+The streaming producer in `Streaming/producer.py` now loads generated customer IDs and holdings from the same sample dataset so intents are emitted against realistic customer profiles.
+
+## Key concepts
+
+- Batch compute 12 product propensity signals per customer.
+- Persist scores to PostgreSQL and publish them as a broadcast stream to a Python/Kafka intent detector.
+- Real-time transaction stream feeds the Windows-native intent detector for home loan, credit card, FD, and personal loan intent.
+- Streamlit dashboard exposes live offers and campaign filters.
+
+## Getting started
+
+1. Install dependencies for each layer.
+2. Configure Kafka, PostgreSQL, and Airflow connections.
+3. Run `Batch/propensity_signals.py` for weekly score preparation.
+4. Run `python Flinkjobs/intent_detector.py` to start the Windows-native intent detector.
+5. Launch `Streamlit/app.py` to view marketing operations.

@@ -1,0 +1,5 @@
+product_family,home_loan_home_improvement,home_loan_salary,home_loan_existing,home_loan_credit
+home_loan,0.35,0.25,0.15,0.25
+credit_card,0.15,0.20,0.30,0.35
+fixed_deposit,0.10,0.30,0.20,0.40
+personal_loan,0.20,0.25,0.15,0.40

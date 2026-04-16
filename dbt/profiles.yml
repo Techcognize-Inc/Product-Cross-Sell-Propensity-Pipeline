@@ -1,0 +1,11 @@
+default:
+  outputs:
+    dev:
+      type: postgres
+      host: postgres
+      port: 5432
+      user: airflow
+      password: airflow
+      dbname: airflow
+      schema: public
+  target: dev
