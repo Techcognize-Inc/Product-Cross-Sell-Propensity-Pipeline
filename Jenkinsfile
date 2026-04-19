@@ -115,11 +115,11 @@ pipeline {
         script {
           if (isUnix()) {
             sh '''
-              docker compose -f docker-compose.yml build --no-parallel airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
+              docker compose -f docker-compose.yml build airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
             '''
           } else {
             bat '''
-              docker compose -f docker-compose.yml build --no-parallel airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
+              docker compose -f docker-compose.yml build airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
             '''
           }
         }
