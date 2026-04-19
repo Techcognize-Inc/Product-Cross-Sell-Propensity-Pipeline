@@ -7,6 +7,7 @@ This repository implements a hybrid batch + streaming propensity scoring pipelin
 - `Batch/`: PySpark weekly signal engineering job that computes customer-product propensity signals and writes scoring inputs.
 - `dbt/`: Data transformation layer with a `mart_propensity_scores` model and configurable score weights.
 - `Flinkjobs/`: Windows-native Python/Kafka intent detector that consumes transaction events and broadcast propensity scores, then emits CRM offers.
+- `Flinkjobs/churn_trigger_detector.py`: Churn trigger detector consuming `customer.events` and `churn.rules.broadcast`, emitting retention alerts.
 - `Airflow/`: DAG to orchestrate weekly batch refresh, broadcast score publication, and nightly enrichment updates.
 - `Streaming/`: Kafka producer/consumer helpers for transaction and product event streams.
 - `Streamlit/`: Marketing dashboard for live intent feed, campaign builder, and score overview.
@@ -21,6 +22,7 @@ This repo includes a root `docker-compose.yml` that starts:
 - Streamlit dashboard
 - Kafka transaction producer
 - Kafka propensity score broadcast publisher
+- Churn rule broadcaster and churn trigger detector
 - CRM Kafka consumer
 - Python/Kafka intent detector service
 
@@ -60,6 +62,8 @@ The streaming producer in `Streaming/producer.py` now loads generated customer I
 - Batch compute 12 product propensity signals per customer.
 - Persist scores to PostgreSQL and publish them as a broadcast stream to a Python/Kafka intent detector.
 - Real-time transaction stream feeds the Windows-native intent detector for home loan, credit card, FD, and personal loan intent.
+- Real-time customer event stream feeds churn trigger detection with 7-day PRODUCT_CLOSURE -> SALARY_REDIRECT pattern alerts.
+- Retention alerts are persisted to `public.retention_alerts` and enriched in Airflow with RM assignment and contact windows.
 - Streamlit dashboard exposes live offers and campaign filters.
 
 ## Getting started
@@ -69,3 +73,31 @@ The streaming producer in `Streaming/producer.py` now loads generated customer I
 3. Run `Batch/propensity_signals.py` for weekly score preparation.
 4. Run `python Flinkjobs/intent_detector.py` to start the Windows-native intent detector.
 5. Launch `Streamlit/app.py` to view marketing operations.
+
+## Jenkins CI/CD
+
+This repository now includes a root `Jenkinsfile` with CI and optional CD stages:
+
+- Checkout source
+- Install Python dependencies
+- Validate key pipeline modules (`py_compile`)
+- Run focused unit tests (`tests/test_pipeline.py`)
+- Build deployment images with Docker Compose
+- Optional deployment (local node or remote SSH target)
+
+### Parameters
+
+- `RUN_DEPLOY`: if `true`, executes deployment stage
+- `DEPLOY_HOST`: SSH target in the form `user@host`; leave empty for local deploy
+- `DEPLOY_PATH`: repository path on deployment target
+- `DEPLOY_BRANCH`: branch to deploy
+- `COMPOSE_FILE`: compose file path (default `docker-compose.yml`)
+- `DEPLOY_STACK`: space-separated compose services to roll out
+
+### Required Jenkins credentials for remote deploy
+
+- `deploy-ssh-key` (SSH Username with private key)
+
+### Helper script
+
+- `ci/scripts/deploy_compose.sh` handles local/remote rollout with `docker compose up -d --build`.
