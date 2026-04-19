@@ -115,12 +115,11 @@ pipeline {
         script {
           if (isUnix()) {
             sh '''
-              COMPOSE_CMD=$(command -v docker-compose 2>/dev/null || echo "docker compose")
-              $COMPOSE_CMD -f docker-compose.yml build airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
+              docker compose -f docker-compose.yml build airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
             '''
           } else {
             bat '''
-              docker-compose -f docker-compose.yml build airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
+              docker compose -f docker-compose.yml build airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
             '''
           }
         }

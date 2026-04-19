@@ -9,7 +9,7 @@ RUN apt-get update \
     && chmod a+r /etc/apt/keyrings/docker.asc \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo $VERSION_CODENAME) stable" > /etc/apt/sources.list.d/docker.list \
     && apt-get update \
-    && apt-get install -y --no-install-recommends docker-ce-cli \
+    && apt-get install -y --no-install-recommends docker-ce-cli docker-compose-plugin \
     && ln -sf /usr/bin/python3 /usr/local/bin/python \
     && ln -sf /usr/bin/pip3 /usr/local/bin/pip \
     && rm -rf /var/lib/apt/lists/*
