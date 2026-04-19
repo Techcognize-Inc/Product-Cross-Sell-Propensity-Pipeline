@@ -1,11 +1,21 @@
-{{ config(materialized='table') }}
+
+  
+    
+
+  create  table "airflow"."public"."mart_propensity_scores__dbt_tmp"
+  
+  
+    as
+  
+  (
+    
 
 with score_inputs as (
-    select * from {{ ref('propensity_inputs') }}
+    select * from "airflow"."public"."propensity_inputs"
 ),
 
 weights as (
-    select * from {{ ref('weight_seeds') }}
+    select * from "airflow"."public"."weight_seeds"
 ),
 
 normalized_signals as (
@@ -76,3 +86,5 @@ select
 
 from normalized_signals
 order by propensity_score desc
+  );
+  

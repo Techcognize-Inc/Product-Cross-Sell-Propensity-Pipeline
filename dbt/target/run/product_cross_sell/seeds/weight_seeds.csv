@@ -1,0 +1,14 @@
+
+    
+    
+    
+    create table "airflow"."public"."weight_seeds" ("product_family" text,"total_spend_wt" float8,"txn_count_wt" float8,"avg_txn_wt" float8,"diversity_wt" float8,"income_wt" float8,"activity_wt" float8,"recency_wt" float8,"affinity_wt" float8,"age_wt" float8)
+  ;
+    -- dbt seed --
+    
+          insert into "airflow"."public"."weight_seeds" ("product_family", "total_spend_wt", "txn_count_wt", "avg_txn_wt", "diversity_wt", "income_wt", "activity_wt", "recency_wt", "affinity_wt", "age_wt") values
+          (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+      
+
+;
+  

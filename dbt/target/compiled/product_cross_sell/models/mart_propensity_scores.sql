@@ -1,11 +1,11 @@
-{{ config(materialized='table') }}
+
 
 with score_inputs as (
-    select * from {{ ref('propensity_inputs') }}
+    select * from "airflow"."public"."propensity_inputs"
 ),
 
 weights as (
-    select * from {{ ref('weight_seeds') }}
+    select * from "airflow"."public"."weight_seeds"
 ),
 
 normalized_signals as (

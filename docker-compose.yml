@@ -1,6 +1,19 @@
-version: '3.9'
-
 services:
+
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    restart: always
+    ports:
+      - "8082:8080"
+      - "50000:50000"
+    environment:
+      JENKINS_OPTS: "--httpPort=8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/workspace
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
@@ -32,40 +45,79 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      POSTGRES_USER: ${POSTGRES_USER:-airflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-airflow}
+      POSTGRES_DB: ${POSTGRES_DB:-airflow}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   airflow-webserver:
-    image: apache/airflow:2.7.1-python3.11
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
     depends_on:
       - postgres
     ports:
       - "8080:8080"
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-      AIRFLOW__CORE__FERNET_KEY: "egkwLUYtHNJMar3Wl68aE7qFa5L_Ir_Y9TosRdNTkR0="
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres/${POSTGRES_DB:-airflow}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-egkwLUYtHNJMar3Wl68aE7qFa5L_Ir_Y9TosRdNTkR0=}
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY:-propensity_pipeline_shared_secret_key_2026}
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      PROJECT_ROOT: /opt/airflow/project
+      DATA_ROOT: /data
+      DB_HOST: postgres
+      DB_USER: ${POSTGRES_USER:-airflow}
+      DB_PASS: ${POSTGRES_PASSWORD:-airflow}
+      DB_NAME: ${POSTGRES_DB:-airflow}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
+      BROADCAST_TOPIC: ${BROADCAST_TOPIC:-propensity_scores.broadcast}
+      STREAMLIT_HEALTH_URLS: ${STREAMLIT_HEALTH_URLS:-http://streamlit:8501/healthz,http://localhost:8501/healthz}
     volumes:
       - ./Airflow/dags:/opt/airflow/dags
-    command: webserver
+      - ./Airflow/logs:/opt/airflow/logs
+      - ./:/opt/airflow/project
+      - ./data:/data
+    command: >
+      bash -c "airflow db upgrade && airflow webserver"
 
   airflow-scheduler:
-    image: apache/airflow:2.7.1-python3.11
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
     depends_on:
       - postgres
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-      AIRFLOW__CORE__FERNET_KEY: "egkwLUYtHNJMar3Wl68aE7qFa5L_Ir_Y9TosRdNTkR0="
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres/${POSTGRES_DB:-airflow}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-egkwLUYtHNJMar3Wl68aE7qFa5L_Ir_Y9TosRdNTkR0=}
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY:-propensity_pipeline_shared_secret_key_2026}
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      PROJECT_ROOT: /opt/airflow/project
+      DATA_ROOT: /data
+      DB_HOST: postgres
+      DB_USER: ${POSTGRES_USER:-airflow}
+      DB_PASS: ${POSTGRES_PASSWORD:-airflow}
+      DB_NAME: ${POSTGRES_DB:-airflow}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
+      BROADCAST_TOPIC: ${BROADCAST_TOPIC:-propensity_scores.broadcast}
+      STREAMLIT_HEALTH_URLS: ${STREAMLIT_HEALTH_URLS:-http://streamlit:8501/healthz,http://localhost:8501/healthz}
     volumes:
       - ./Airflow/dags:/opt/airflow/dags
+      - ./Airflow/logs:/opt/airflow/logs
+      - ./:/opt/airflow/project
+      - ./data:/data
     command: scheduler
 
   flink-jobmanager:
@@ -91,16 +143,22 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - kafka
-      - postgres
+      kafka:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     ports:
       - "8501:8501"
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      DB_HOST: postgres
+      DB_USER: airflow
+      DB_PASS: airflow
+      DB_NAME: airflow
     volumes:
       - ./:/app
     working_dir: /app
-    command: streamlit run Streamlit/app.py --server.port 8501 --server.enableCORS false
+    command: python -m streamlit run Streamlit/app.py --server.port 8501 --server.enableCORS false
 
   producer:
     build:
@@ -111,6 +169,10 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       TRANSACTION_TOPIC: txn.stream
+      PRODUCT_EVENT_TOPIC: product.events
+      SCENARIO_SHARE: 0.95
+      SCENARIO_CUSTOMERS_PER_PRODUCT: 16
+      SCENARIO_PRODUCT_WEIGHTS: home_loan=0.10,credit_card=0.70,personal_loan=0.10,fixed_deposit=0.10
     volumes:
       - ./:/app
     working_dir: /app
@@ -148,16 +210,50 @@ services:
     working_dir: /app
     command: python Streaming/consumer.py --topic crm.realtime_offers
 
+  realtime_offer_writer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
+      - postgres
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      OFFER_TOPIC: crm.realtime_offers
+      DB_HOST: postgres
+      DB_USER: airflow
+      DB_PASS: airflow
+      DB_NAME: airflow
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: python Streaming/offer_writer.py
+
   intent_detector:
-    image: flink:1.18.1-scala_2.12
+    build:
+      context: .
+      dockerfile: Dockerfile.flink
     depends_on:
       - flink-jobmanager
       - kafka
+      - postgres
     volumes:
-      - ./:/opt/flink/jobs
-      - ./data:/data
-    working_dir: /opt/flink/jobs
-    command: bash -c "sleep 30 && echo 'Submit job manually after cluster is up'"
+      - ./:/app
+    working_dir: /app
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      TRANSACTION_TOPIC: txn.stream
+      PRODUCT_EVENT_TOPIC: product.events
+      BROADCAST_TOPIC: propensity_scores.broadcast
+      OFFER_TOPIC: crm.realtime_offers
+      INTENT_DETECTOR_PARALLELISM: 16
+      REALTIME_OFFER_THRESHOLD: 75
+      DB_HOST: postgres
+      DB_USER: airflow
+      DB_PASS: airflow
+      DB_NAME: airflow
+      FLINK_HOME: /opt/flink
+    command: bash Flinkjobs/start_intent_detector.sh
   spark-job:
     image: apache/spark:3.5.1
     container_name: spark-job
@@ -175,3 +271,4 @@ services:
 volumes:
   postgres_data:
   shared_data:
+  jenkins_home:

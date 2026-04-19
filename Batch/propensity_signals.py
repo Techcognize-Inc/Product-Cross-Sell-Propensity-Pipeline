@@ -10,6 +10,8 @@ def create_spark():
         SparkSession.builder
         .appName("PropensitySignals")
         .config("spark.jars.packages", "org.postgresql:postgresql:42.7.3")
+        .config("spark.sql.autoBroadcastJoinThreshold", "-1")
+        .config("spark.sql.shuffle.partitions", "32")
         .getOrCreate()
     )
 
@@ -17,8 +19,9 @@ def create_spark():
 # =========================
 # LOAD DATA
 # =========================
-def load_data(spark, base_path):
+def load_data(spark):
     base_path = "/data"
+
     transactions = spark.read.parquet(f"{base_path}/transactions.parquet")
     holdings = spark.read.parquet(f"{base_path}/product_holdings.parquet")
     demographics = spark.read.parquet(f"{base_path}/demographics.parquet")
@@ -28,10 +31,11 @@ def load_data(spark, base_path):
 
 
 # =========================
-# TRANSACTION FEATURES
+# TRANSACTION FEATURES (30D)
 # =========================
 def build_transaction_features(txn):
-    txn = txn.withColumn("txn_dt", F.to_date("transaction_ts"))
+
+    txn = txn.withColumn("txn_dt", F.to_date(F.to_timestamp("transaction_ts")))
 
     txn_30d = txn.filter(
         F.col("txn_dt") >= F.date_sub(F.current_date(), 30)
@@ -63,17 +67,75 @@ def build_transaction_features(txn):
 
 
 # =========================
-# SIGNAL BUILDING
+# HOLDINGS NORMALIZATION (FIXED)
 # =========================
-def build_signals(transactions, holdings, demographics, campaign):
+def transform_holdings(holdings):
+
+    product_map = {
+        "credit_card": "has_credit_card",
+        "personal_loan": "has_personal_loan",
+        "home_loan": "has_home_loan",
+        "fixed_deposit": "has_fixed_deposit"
+    }
+
+    rows = [
+        F.struct(
+            F.lit(product).alias("product_family"),
+            F.col(flag).alias("has_product")
+        )
+        for product, flag in product_map.items()
+    ]
+
+    return (
+        holdings
+        .select(
+            "customer_id",
+            F.explode(F.array(rows)).alias("prod")
+        )
+        .select(
+            "customer_id",
+            F.col("prod.product_family").alias("product_family"),
+            F.col("prod.has_product").alias("has_product")
+        )
+    )
+
+
+# =========================
+# SIGNAL BUILDING (1 ROW = CUSTOMER × PRODUCT)
+# =========================
+def build_signals(transactions, holdings, demographics, campaign, spark):
 
     txn_features = build_transaction_features(transactions)
+    holdings_long = transform_holdings(holdings)
 
+    products = ["credit_card", "personal_loan", "home_loan", "fixed_deposit"]
+    product_df = spark.createDataFrame([(p,) for p in products], ["product_family"])
+
+    # base customer level
     base = (
         txn_features
-        .join(holdings, "customer_id", "left")
         .join(demographics, "customer_id", "left")
         .join(campaign, "customer_id", "left")
+    )
+
+    # expand to customer × product
+    base = base.crossJoin(product_df)
+
+    # attach holdings flag
+    base = base.join(
+        holdings_long,
+        ["customer_id", "product_family"],
+        "left"
+    )
+
+    base = base.withColumn(
+        "existing_products_flag",
+        F.when(F.col("has_product") == 1, 1).otherwise(0)
+    )
+
+    base = base.withColumn(
+        "campaign_response_flag",
+        F.when(F.col("last_campaign_response") == "yes", 1).otherwise(0)
     )
 
     base = base.withColumn(
@@ -81,26 +143,7 @@ def build_signals(transactions, holdings, demographics, campaign):
         F.datediff(F.current_date(), F.col("last_txn_date"))
     )
 
-    # 4 product families → explode
-    products = ["credit_card", "personal_loan", "home_loan", "fixed_deposit"]
-
-    df = base.withColumn(
-        "product_family",
-        F.explode(F.array([F.lit(p) for p in products]))
-    )
-
-    # FIXED: proper product signal instead of constant
-    df = df.withColumn(
-        "existing_products_flag",
-        F.when(F.col("has_" + F.col("product_family")).isNotNull(), 1).otherwise(0)
-    )
-
-    df = df.withColumn(
-        "campaign_response_flag",
-        F.when(F.col("last_campaign_response") == "yes", 1).otherwise(0)
-    )
-
-    return df.select(
+    return base.select(
         "customer_id",
         "product_family",
 
@@ -116,7 +159,7 @@ def build_signals(transactions, holdings, demographics, campaign):
         "debit_txn_count_30d",
         "days_since_last_txn",
 
-        # product signals
+        # product signal
         "existing_products_flag",
 
         # demographics
@@ -143,25 +186,29 @@ def write_to_postgres(df):
         .option("user", "airflow") \
         .option("password", "airflow") \
         .option("driver", "org.postgresql.Driver") \
-        .option("batchsize", "10000") \
+        .option("batchsize", 5000) \
+        .option("numPartitions", 32) \
         .mode("overwrite") \
         .save()
 
 
 # =========================
-# MAIN PIPELINE
+# MAIN
 # =========================
 def main():
 
     spark = create_spark()
 
-    base_path = "/data"   # inside docker volume
+    transactions, holdings, demographics, campaign = load_data(spark)
 
-    transactions, holdings, demographics, campaign = load_data(spark, base_path)
+    signals = build_signals(
+        transactions,
+        holdings,
+        demographics,
+        campaign,
+        spark
+    )
 
-    signals = build_signals(transactions, holdings, demographics, campaign)
-
-    # 🚀 LOAD INTO POSTGRES (RAW LAYER)
     write_to_postgres(signals)
 
     spark.stop()

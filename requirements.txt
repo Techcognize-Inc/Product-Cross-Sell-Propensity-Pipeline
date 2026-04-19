@@ -1,9 +1,10 @@
 # Core dependencies for the Product Cross-Sell Propensity Pipeline
 pyspark>=3.4.0
-# pyflink is optional on Windows; use a Linux/container environment to install it.
+apache-flink>=1.18.0
 apache-airflow>=2.7.0
 kafka-python>=2.0.2
 streamlit>=1.24.0
+plotly>=5.20.0
 psycopg2-binary>=2.9.0
 dbt-core>=1.6.0
 pandas>=2.2.0

@@ -1,6 +1,36 @@
 version: 2
 
+sources:
+  - name: raw
+    description: "Raw data tables from batch pipeline"
+    database: airflow
+    schema: raw
+    tables:
+      - name: propensity_inputs
+        description: "Raw propensity signals generated from transaction and demographic data"
+        columns:
+          - name: customer_id
+          - name: product_family
+          - name: total_spend_30d
+          - name: txn_count_30d
+          - name: avg_txn_30d
+          - name: unique_category_count_30d
+          - name: home_improvement_spend_30d
+          - name: electronics_spend_30d
+          - name: travel_spend_30d
+          - name: salary_credit_30d
+          - name: debit_txn_count_30d
+          - name: days_since_last_txn
+          - name: existing_products_flag
+          - name: age
+          - name: income_band
+          - name: campaign_response_flag
+          - name: campaign_touch_count
+
 models:
+  - name: propensity_inputs
+    description: "View of raw propensity signals"
+
   - name: mart_propensity_scores
     description: "Customer-product propensity scores computed from weekly batch inputs."
     columns:
@@ -10,6 +40,8 @@ models:
         description: "Product category for propensity scoring"
       - name: propensity_score
         description: "Normalized score from 0 to 100"
+      - name: score_ts
+        description: "Timestamp when the score was computed"
 
   - name: mart_campaign_lists
     description: "Campaign lists for high-propensity customers filtered from propensity scores."

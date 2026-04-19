@@ -1,0 +1,22 @@
+FROM flink:1.18.1-scala_2.12
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 python3-pip python3-dev build-essential libpq-dev wget ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -sf /usr/bin/python3 /usr/bin/python
+
+# Install Python deps required by the Flink intent detector runtime.
+RUN pip3 install --no-cache-dir apache-flink==1.18.1 kafka-python psycopg2-binary
+
+# Flink Python jobs that use KafkaSource/KafkaSink need the Java connector JAR
+# on Flink's runtime classpath.
+RUN wget -q -O /opt/flink/lib/flink-sql-connector-kafka-3.0.2-1.18.jar \
+    https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/3.0.2-1.18/flink-sql-connector-kafka-3.0.2-1.18.jar
+
+# Keep a stable flink-python jar path on classpath for gateway startup.
+RUN cp /opt/flink/opt/flink-python-1.18.1.jar /opt/flink/lib/flink-python-1.18.1.jar
+
+ENV FLINK_HOME=/opt/flink
+ENV PYTHONUNBUFFERED=1

@@ -1,4 +1,14 @@
--- mart_campaign_lists.sql
+
+  
+    
+
+  create  table "airflow"."public"."mart_campaign_lists__dbt_tmp"
+  
+  
+    as
+  
+  (
+    -- mart_campaign_lists.sql
 -- Generates campaign lists for high-propensity customers with ranking and segmentation
 
 with base_scores as (
@@ -8,7 +18,7 @@ with base_scores as (
         product_family,
         propensity_score,
         score_ts
-    from {{ ref('mart_propensity_scores') }}
+    from "airflow"."public"."mart_propensity_scores"
 
 ),
 
@@ -58,3 +68,5 @@ final as (
 )
 
 select * from final
+  );
+  

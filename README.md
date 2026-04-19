@@ -101,3 +101,25 @@ This repository now includes a root `Jenkinsfile` with CI and optional CD stages
 ### Helper script
 
 - `ci/scripts/deploy_compose.sh` handles local/remote rollout with `docker compose up -d --build`.
+
+### Jenkins in Docker Compose
+
+Jenkins is included in `docker-compose.yml` and exposed on port `8082` (to avoid conflicts with Airflow `8080` and Flink `8081`).
+
+Start Jenkins:
+
+```bash
+docker compose up -d jenkins
+```
+
+Access Jenkins UI:
+
+```text
+http://localhost:8082
+```
+
+Get initial admin password:
+
+```bash
+docker compose exec -T jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```

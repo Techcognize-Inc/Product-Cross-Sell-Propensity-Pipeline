@@ -8,7 +8,7 @@ with base_scores as (
         product_family,
         propensity_score,
         score_ts
-    from {{ ref('mart_propensity_scores') }}
+    from "airflow"."public"."mart_propensity_scores"
 
 ),
 

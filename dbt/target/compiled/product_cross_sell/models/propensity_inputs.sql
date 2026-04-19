@@ -1,0 +1,1 @@
+select * from "airflow"."raw"."propensity_inputs"
