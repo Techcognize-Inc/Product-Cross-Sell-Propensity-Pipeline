@@ -1,0 +1,31 @@
+# VCS
+.git
+.gitignore
+
+# Python cache / virtual env
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.pytest_cache/
+.venv/
+.venv-ci/
+
+# Airflow runtime logs
+Airflow/logs/
+
+# dbt runtime artifacts
+dbt/logs/
+dbt/target/
+
+# Project/runtime logs
+logs/
+
+# Editor/OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local env files
+.env
