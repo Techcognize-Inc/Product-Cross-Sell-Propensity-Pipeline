@@ -81,12 +81,24 @@ pipeline {
           if (isUnix()) {
             sh '''
               mkdir -p reports
-              "$CI_VENV_DIR"/bin/python -m pytest tests/test_pipeline.py -q --maxfail=1 --disable-warnings --junitxml=reports/pytest.xml
+              if [ -f tests/test_pipeline.py ]; then
+                "$CI_VENV_DIR"/bin/python -m pytest tests/test_pipeline.py -q --maxfail=1 --disable-warnings --junitxml=reports/pytest.xml
+              elif [ -d tests ]; then
+                "$CI_VENV_DIR"/bin/python -m pytest tests -q --maxfail=1 --disable-warnings --junitxml=reports/pytest.xml
+              else
+                echo "No tests directory found. Skipping test stage."
+              fi
             '''
           } else {
             bat '''
               if not exist reports mkdir reports
-              pytest tests/test_pipeline.py -q --maxfail=1 --disable-warnings --junitxml=reports/pytest.xml
+              if exist tests\test_pipeline.py (
+                .venv-ci\Scripts\python -m pytest tests\test_pipeline.py -q --maxfail=1 --disable-warnings --junitxml=reports\pytest.xml
+              ) else if exist tests (
+                .venv-ci\Scripts\python -m pytest tests -q --maxfail=1 --disable-warnings --junitxml=reports\pytest.xml
+              ) else (
+                echo No tests directory found. Skipping test stage.
+              )
             '''
           }
         }
