@@ -1,0 +1,14 @@
+# CI-only requirements - excludes runtime-only packages that
+# are not needed for syntax validation and unit tests.
+# apache-flink is excluded: it runs inside its own Docker container
+# and its build chain (apache-beam / grpcio-tools) is incompatible
+# with Python 3.13 in the Jenkins environment.
+# pyspark is excluded: too large for CI and not needed for import checks.
+kafka-python>=2.0.2
+streamlit>=1.24.0
+plotly>=5.20.0
+psycopg2-binary>=2.9.0
+dbt-core>=1.6.0
+pandas>=2.2.0
+pyarrow>=11.0.0
+faker>=18.0.0

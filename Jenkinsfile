@@ -37,15 +37,15 @@ pipeline {
               SYSTEM_PYTHON=$(command -v python3 || command -v python)
               "$SYSTEM_PYTHON" --version
               "$SYSTEM_PYTHON" -m venv "$CI_VENV_DIR"
-              "$CI_VENV_DIR"/bin/python -m pip install --upgrade pip
-              "$CI_VENV_DIR"/bin/python -m pip install -r requirements.txt
+              "$CI_VENV_DIR"/bin/python -m pip install --upgrade pip setuptools
+              "$CI_VENV_DIR"/bin/python -m pip install -r requirements-ci.txt
               "$CI_VENV_DIR"/bin/python -m pip install pytest
             '''
           } else {
             bat '''
               python --version
-              python -m pip install --upgrade pip
-              pip install -r requirements.txt
+              python -m pip install --upgrade pip setuptools
+              pip install -r requirements-ci.txt
               pip install pytest
             '''
           }
