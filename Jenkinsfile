@@ -33,10 +33,11 @@ pipeline {
         script {
           if (isUnix()) {
             sh '''
-              python --version
-              python -m pip install --upgrade pip
-              pip install -r requirements.txt
-              pip install pytest
+              PYTHON_BIN=$(command -v python || command -v python3)
+              "$PYTHON_BIN" --version
+              "$PYTHON_BIN" -m pip install --upgrade pip
+              "$PYTHON_BIN" -m pip install -r requirements.txt
+              "$PYTHON_BIN" -m pip install pytest
             '''
           } else {
             bat '''
@@ -55,10 +56,11 @@ pipeline {
         script {
           if (isUnix()) {
             sh '''
-              python -m py_compile Airflow/dags/propensity_pipeline.py
-              python -m py_compile Batch/propensity_signals.py
-              python -m py_compile Flinkjobs/intent_detector.py
-              python -m py_compile Streamlit/app.py
+              PYTHON_BIN=$(command -v python || command -v python3)
+              "$PYTHON_BIN" -m py_compile Airflow/dags/propensity_pipeline.py
+              "$PYTHON_BIN" -m py_compile Batch/propensity_signals.py
+              "$PYTHON_BIN" -m py_compile Flinkjobs/intent_detector.py
+              "$PYTHON_BIN" -m py_compile Streamlit/app.py
             '''
           } else {
             bat '''
