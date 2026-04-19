@@ -90,16 +90,16 @@ pipeline {
               fi
             '''
           } else {
-            bat '''
+            bat """
               if not exist reports mkdir reports
-              if exist tests\test_pipeline.py (
-                .venv-ci\Scripts\python -m pytest tests\test_pipeline.py -q --maxfail=1 --disable-warnings --junitxml=reports\pytest.xml
+              if exist tests\\test_pipeline.py (
+                .venv-ci\\Scripts\\python -m pytest tests\\test_pipeline.py -q --maxfail=1 --disable-warnings --junitxml=reports\\pytest.xml
               ) else if exist tests (
-                .venv-ci\Scripts\python -m pytest tests -q --maxfail=1 --disable-warnings --junitxml=reports\pytest.xml
+                .venv-ci\\Scripts\\python -m pytest tests -q --maxfail=1 --disable-warnings --junitxml=reports\\pytest.xml
               ) else (
                 echo No tests directory found. Skipping test stage.
               )
-            '''
+            """
           }
         }
       }
