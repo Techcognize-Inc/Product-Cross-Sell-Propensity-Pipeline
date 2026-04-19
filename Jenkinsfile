@@ -10,6 +10,7 @@ pipeline {
 
   parameters {
     booleanParam(name: 'RUN_DEPLOY', defaultValue: false, description: 'Run deployment after CI stages pass')
+    booleanParam(name: 'BUILD_DEPLOYMENT_IMAGES', defaultValue: false, description: 'Build deployment Docker images during CI. Keep disabled for faster local validation.')
     string(name: 'DEPLOY_HOST', defaultValue: '', description: 'SSH target, example: ubuntu@10.0.0.15. Leave empty for local deploy on Jenkins node.')
     string(name: 'DEPLOY_PATH', defaultValue: '/opt/product-cross-sell', description: 'Path to repo on deploy target')
     string(name: 'DEPLOY_BRANCH', defaultValue: 'main', description: 'Branch to deploy')
@@ -113,6 +114,9 @@ pipeline {
     }
 
     stage('Build Deployment Images') {
+      when {
+        expression { return params.BUILD_DEPLOYMENT_IMAGES || params.RUN_DEPLOY }
+      }
       steps {
         timeout(time: 20, unit: 'MINUTES') {
           script {

@@ -88,6 +88,7 @@ This repository now includes a root `Jenkinsfile` with CI and optional CD stages
 ### Parameters
 
 - `RUN_DEPLOY`: if `true`, executes deployment stage
+- `BUILD_DEPLOYMENT_IMAGES`: if `true`, builds deployment images during CI; leave `false` for faster local validation
 - `DEPLOY_HOST`: SSH target in the form `user@host`; leave empty for local deploy
 - `DEPLOY_PATH`: repository path on deployment target
 - `DEPLOY_BRANCH`: branch to deploy
