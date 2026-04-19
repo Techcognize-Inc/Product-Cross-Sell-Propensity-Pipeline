@@ -12,6 +12,13 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends docker-ce-cli docker-compose-plugin \
     && ln -sf /usr/bin/python3 /usr/local/bin/python \
     && ln -sf /usr/bin/pip3 /usr/local/bin/pip \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -f docker \
+    && usermod -aG docker jenkins
 
-USER jenkins
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Stay as root; entrypoint will fix docker GID then su to jenkins
+USER root
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
