@@ -19,6 +19,7 @@ pipeline {
   environment {
     PIP_DISABLE_PIP_VERSION_CHECK = '1'
     PYTHONUNBUFFERED = '1'
+    CI_VENV_DIR = '.venv-ci'
   }
 
   stages {
@@ -33,11 +34,12 @@ pipeline {
         script {
           if (isUnix()) {
             sh '''
-              PYTHON_BIN=$(command -v python || command -v python3)
-              "$PYTHON_BIN" --version
-              "$PYTHON_BIN" -m pip install --upgrade pip
-              "$PYTHON_BIN" -m pip install -r requirements.txt
-              "$PYTHON_BIN" -m pip install pytest
+              SYSTEM_PYTHON=$(command -v python3 || command -v python)
+              "$SYSTEM_PYTHON" --version
+              "$SYSTEM_PYTHON" -m venv "$CI_VENV_DIR"
+              "$CI_VENV_DIR"/bin/python -m pip install --upgrade pip
+              "$CI_VENV_DIR"/bin/python -m pip install -r requirements.txt
+              "$CI_VENV_DIR"/bin/python -m pip install pytest
             '''
           } else {
             bat '''
@@ -56,11 +58,10 @@ pipeline {
         script {
           if (isUnix()) {
             sh '''
-              PYTHON_BIN=$(command -v python || command -v python3)
-              "$PYTHON_BIN" -m py_compile Airflow/dags/propensity_pipeline.py
-              "$PYTHON_BIN" -m py_compile Batch/propensity_signals.py
-              "$PYTHON_BIN" -m py_compile Flinkjobs/intent_detector.py
-              "$PYTHON_BIN" -m py_compile Streamlit/app.py
+              "$CI_VENV_DIR"/bin/python -m py_compile Airflow/dags/propensity_pipeline.py
+              "$CI_VENV_DIR"/bin/python -m py_compile Batch/propensity_signals.py
+              "$CI_VENV_DIR"/bin/python -m py_compile Flinkjobs/intent_detector.py
+              "$CI_VENV_DIR"/bin/python -m py_compile Streamlit/app.py
             '''
           } else {
             bat '''
@@ -80,7 +81,7 @@ pipeline {
           if (isUnix()) {
             sh '''
               mkdir -p reports
-              pytest tests/test_pipeline.py -q --maxfail=1 --disable-warnings --junitxml=reports/pytest.xml
+              "$CI_VENV_DIR"/bin/python -m pytest tests/test_pipeline.py -q --maxfail=1 --disable-warnings --junitxml=reports/pytest.xml
             '''
           } else {
             bat '''
