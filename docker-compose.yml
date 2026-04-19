@@ -122,7 +122,9 @@ services:
     command: scheduler
 
   flink-jobmanager:
-    image: flink:1.18.1-scala_2.12
+    build:
+      context: .
+      dockerfile: Dockerfile.flink
     container_name: flink-jobmanager
     ports:
       - "8081:8081"
@@ -131,7 +133,9 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
 
   flink-taskmanager:
-    image: flink:1.18.1-scala_2.12
+    build:
+      context: .
+      dockerfile: Dockerfile.flink
     container_name: flink-taskmanager
     depends_on:
       - flink-jobmanager
