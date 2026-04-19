@@ -5,6 +5,7 @@ pipeline {
     timestamps()
     disableConcurrentBuilds()
     buildDiscarder(logRotator(numToKeepStr: '25'))
+    timeout(time: 45, unit: 'MINUTES')
   }
 
   parameters {
@@ -25,6 +26,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
+        deleteDir()
         checkout scm
       }
     }
@@ -112,15 +114,17 @@ pipeline {
 
     stage('Build Deployment Images') {
       steps {
-        script {
-          if (isUnix()) {
-            sh '''
-              docker compose -f docker-compose.yml build airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
-            '''
-          } else {
-            bat '''
-              docker compose -f docker-compose.yml build airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
-            '''
+        timeout(time: 20, unit: 'MINUTES') {
+          script {
+            if (isUnix()) {
+              sh '''
+                docker compose -f docker-compose.yml build airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
+              '''
+            } else {
+              bat '''
+                docker compose -f docker-compose.yml build airflow-webserver airflow-scheduler streamlit producer broadcast_publisher realtime_offer_writer
+              '''
+            }
           }
         }
       }
